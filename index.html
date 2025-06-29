@@ -18,7 +18,6 @@
     }
 
     header {
-      background: #000;
       color: #fff;
       padding: 1rem 0;
       text-align: center;
@@ -90,6 +89,7 @@
       height: 300px;
       border-radius: 10px;
       flex-shrink: 0;
+      object-fit: cover;
     }
 
     footer {
@@ -135,6 +135,16 @@
     <p><strong>Contact:</strong> <a href="tel:8650391978" style="color:#facc15;">8650391978</a></p>
   </section>
 
+  <section id="gallery">
+    <h2>Our Gym Gallery</h2>
+    <div class="gallery" id="galleryScroll">
+      <img src="gym1.jpg" alt="Gym photo 1" width="100%">
+      <img src="gym2.jpg" alt="Gym photo 2" width="100%">
+      <img src="gym3.jpg" alt="Gym photo 3" width="100%">
+      <img src="gym4.jpg" alt="Gym photo 4" width="100%">
+    </div>
+  </section>
+
   <section id="facilities">
     <h2>Facilities</h2>
     <ul>
@@ -176,16 +186,6 @@
     </table>
   </section>
 
-  <section id="gallery">
-    <h2>Our Gym Gallery</h2>
-    <div class="gallery" id="galleryScroll">
-      <img src="gym1.jpg" alt="Gym photo 1">
-      <img src="gym2.jpg" alt="Gym photo 2">
-      <img src="gym3.jpg" alt="Gym photo 3">
-      <img src="gym4.jpg" alt="Gym photo 4">
-    </div>
-  </section>
-
   <section id="contact">
     <h2>Contact & Location</h2>
     <p><strong>Address:</strong> Kachi Garhi, Shamli, UP 247776</p>
@@ -200,15 +200,15 @@
 
   <script>
     const gallery = document.getElementById('galleryScroll');
-    let scrollAmount = 0;
+    let scrollX = 0;
     function autoScrollGallery() {
-      scrollAmount += 1;
-      gallery.scrollLeft = scrollAmount;
-      if (scrollAmount >= gallery.scrollWidth - gallery.clientWidth) {
-        scrollAmount = 0;
+      scrollX += 1;
+      gallery.scrollLeft = scrollX;
+      if (scrollX >= gallery.scrollWidth - gallery.clientWidth) {
+        scrollX = 0;
       }
     }
-    setInterval(autoScrollGallery, 30);
+    setInterval(autoScrollGallery, 25);
   </script>
 </body>
 </html>
