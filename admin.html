@@ -222,7 +222,7 @@
     <div class="heading">
       <div class="kicker">Gym Administration</div>
       <h1>Member Management</h1>
-      <p>Login securely to add or update gym member fee information.</p>
+      <p>Login securely to add or update gym member information and fee status.</p>
     </div>
 
     <section class="auth-card" id="loginCard">
@@ -256,56 +256,48 @@
 
       <form id="memberForm" class="form-grid">
         <div class="field">
-          <label for="memberId">JM Member ID <span class="required">*</span></label>
-          <input id="memberId" type="text" placeholder="JM-002" maxlength="20" required>
-          <div class="hint">Use JM-001, JM-002, JM-003...</div>
-        </div>
-
-        <div class="field">
-          <label for="memberName">Member Name <span class="required">*</span></label>
+          <label for="memberName">Full Name <span class="required">*</span></label>
           <input id="memberName" type="text" placeholder="Full name" maxlength="100" required>
         </div>
 
         <div class="field">
+          <label for="village">Village</label>
+          <input id="village" type="text" placeholder="Village name" maxlength="100">
+        </div>
+
+        <div class="field">
           <label for="mobileNumber">Mobile Number <span class="required">*</span></label>
-          <input id="mobileNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile" required>
+          <input id="mobileNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" required>
         </div>
 
         <div class="field">
-          <label for="plan">Plan <span class="required">*</span></label>
-          <select id="plan" required>
-            <option value="1 Month">1 Month</option>
-            <option value="3 Months">3 Months</option>
-            <option value="6 Months">6 Months</option>
-          </select>
+          <label for="joiningDate">Date of Joining</label>
+          <input id="joiningDate" type="date">
         </div>
 
         <div class="field">
-          <label for="amount">Amount <span class="required">*</span></label>
-          <input id="amount" type="number" min="0" step="1" value="600" required>
+          <label for="fee">Fee</label>
+          <input id="fee" type="number" min="0" step="1" placeholder="600">
         </div>
 
         <div class="field">
-          <label>Payment Status <span class="required">*</span></label>
+          <label>Current Month Fee Status</label>
           <div class="radio-row">
-            <label class="radio"><input type="radio" name="paid" value="true"> Paid</label>
-            <label class="radio"><input type="radio" name="paid" value="false" checked> Payment Due</label>
+            <label class="radio"><input type="radio" name="currentFeePaid" value="true"> Paid</label>
+            <label class="radio"><input type="radio" name="currentFeePaid" value="false" checked> Due</label>
           </div>
         </div>
 
         <div class="field">
-          <label for="paidMonth">Paid For / Billing Month</label>
-          <input id="paidMonth" type="text" placeholder="September 2026">
+          <label for="oldDue">Old Due</label>
+          <input id="oldDue" type="number" min="0" step="1" value="0" placeholder="0">
+          <div class="hint">Unpaid amount carried forward from previous months.</div>
         </div>
 
         <div class="field">
-          <label for="paidDate">Paid Date</label>
-          <input id="paidDate" type="date">
-        </div>
-
-        <div class="field">
-          <label for="dueDate">Next Due Date <span class="required">*</span></label>
-          <input id="dueDate" type="date" required>
+          <label for="memberId">JM Member ID</label>
+          <input id="memberId" type="text" placeholder="Leave blank for automatic ID" maxlength="20">
+          <div class="hint">Leave blank to automatically assign the next JM-XXX ID.</div>
         </div>
 
         <div class="form-actions">
@@ -401,21 +393,12 @@
     sessionStorage.removeItem("jm_admin_access_token");
     sessionStorage.removeItem("jm_admin_email");
     memberForm.reset();
-    document.getElementById("amount").value = "600";
-    document.querySelector('input[name="paid"][value="false"]').checked = true;
+    document.querySelector('input[name="currentFeePaid"][value="false"]').checked = true;
+    document.getElementById("oldDue").value = "0";
     clearStatus(saveStatus);
     setAdminVisible(false);
   }
 
-  function updateAmountFromPlan() {
-    const plan = document.getElementById("plan").value;
-    const amounts = {
-      "1 Month": 600,
-      "3 Months": 1500,
-      "6 Months": 2500
-    };
-    document.getElementById("amount").value = amounts[plan] ?? "";
-  }
 
   async function saveMember(event) {
     event.preventDefault();
@@ -425,18 +408,19 @@
       return;
     }
 
-    const memberId = document.getElementById("memberId").value.trim().toUpperCase();
+    const memberIdInput = document.getElementById("memberId").value.trim().toUpperCase();
     const name = document.getElementById("memberName").value.trim();
+    const village = document.getElementById("village").value.trim() || null;
     const mobileNumber = document.getElementById("mobileNumber").value.trim();
-    const plan = document.getElementById("plan").value;
-    const amount = Number(document.getElementById("amount").value);
-    const paid = document.querySelector('input[name="paid"]:checked').value === "true";
-    const paidMonth = document.getElementById("paidMonth").value.trim() || null;
-    const paidDate = document.getElementById("paidDate").value || null;
-    const dueDate = document.getElementById("dueDate").value;
+    const joiningDate = document.getElementById("joiningDate").value || null;
+    const feeValue = document.getElementById("fee").value.trim();
+    const fee = feeValue === "" ? null : Number(feeValue);
+    const currentFeePaid = document.querySelector('input[name="currentFeePaid"]:checked').value === "true";
+    const oldDueValue = document.getElementById("oldDue").value.trim();
+    const oldDue = oldDueValue === "" ? 0 : Number(oldDueValue);
 
-    if (!/^JM-\d{3,}$/.test(memberId)) {
-      showStatus(saveStatus, "Member ID must look like JM-001.", "error");
+    if (!name) {
+      showStatus(saveStatus, "Full Name is required.", "error");
       return;
     }
 
@@ -445,13 +429,18 @@
       return;
     }
 
-    if (!name || !plan || !Number.isFinite(amount) || amount < 0 || !dueDate) {
-      showStatus(saveStatus, "Please fill all required fields.", "error");
+    if (memberIdInput && !/^JM-\d{3,}$/.test(memberIdInput)) {
+      showStatus(saveStatus, "Member ID must look like JM-001.", "error");
       return;
     }
 
-    if (paid && !paidDate) {
-      showStatus(saveStatus, "Enter the paid date when the status is Paid.", "error");
+    if (fee !== null && (!Number.isFinite(fee) || fee < 0)) {
+      showStatus(saveStatus, "Fee must be a valid amount.", "error");
+      return;
+    }
+
+    if (!Number.isFinite(oldDue) || oldDue < 0) {
+      showStatus(saveStatus, "Old Due must be zero or a positive amount.", "error");
       return;
     }
 
@@ -459,19 +448,44 @@
     saveBtn.textContent = "Saving…";
     clearStatus(saveStatus);
 
-    const record = {
-      member_id: memberId,
-      name,
-      plan,
-      amount,
-      paid,
-      paid_month: paidMonth,
-      paid_date: paidDate,
-      due_date: dueDate,
-      mobile_number: mobileNumber
-    };
-
     try {
+      // If the admin leaves Member ID blank, ask Supabase for the next available JM-XXX.
+      let memberId = memberIdInput;
+
+      if (!memberId) {
+        const nextResponse = await fetch(
+          `${SUPABASE_URL}/rest/v1/members?select=member_id&order=member_id.desc&limit=1000`,
+          {
+            method: "GET",
+            headers: {
+              "apikey": SUPABASE_ANON_KEY,
+              "Authorization": `Bearer ${accessToken}`
+            }
+          }
+        );
+
+        if (!nextResponse.ok) throw new Error("Could not generate a Member ID.");
+        const existing = await nextResponse.json();
+
+        let highest = 0;
+        for (const row of existing) {
+          const match = /^JM-(\d+)$/.exec(row.member_id || "");
+          if (match) highest = Math.max(highest, Number(match[1]));
+        }
+        memberId = `JM-${String(highest + 1).padStart(3, "0")}`;
+      }
+
+      const record = {
+        member_id: memberId,
+        name,
+        village,
+        mobile_number: mobileNumber,
+        joining_date: joiningDate,
+        fee,
+        current_fee_paid: currentFeePaid,
+        old_due: oldDue
+      };
+
       const response = await fetch(`${SUPABASE_URL}/rest/v1/members?on_conflict=member_id`, {
         method: "POST",
         headers: {
@@ -496,8 +510,8 @@
 
       showStatus(saveStatus, `${memberId} — ${name} was saved successfully.`, "ok");
       memberForm.reset();
-      document.getElementById("amount").value = "600";
-      document.querySelector('input[name="paid"][value="false"]').checked = true;
+      document.querySelector('input[name="currentFeePaid"][value="false"]').checked = true;
+      document.getElementById("oldDue").value = "0";
     } catch (error) {
       showStatus(saveStatus, error.message || "Could not save member.", "error");
     } finally {
@@ -511,12 +525,10 @@
   memberForm.addEventListener("submit", saveMember);
   clearBtn.addEventListener("click", () => {
     memberForm.reset();
-    document.getElementById("amount").value = "600";
-    document.querySelector('input[name="paid"][value="false"]').checked = true;
+    document.querySelector('input[name="currentFeePaid"][value="false"]').checked = true;
+    document.getElementById("oldDue").value = "0";
     clearStatus(saveStatus);
   });
-  document.getElementById("plan").addEventListener("change", updateAmountFromPlan);
-
   document.getElementById("mobileNumber").addEventListener("input", e => {
     e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
   });
