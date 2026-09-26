@@ -6,7 +6,7 @@
 
   <title>JM Kalshyan Fitness | Best Gym in Shamli</title>
   <meta name="description" content="JM Kalshyan Fitness in Shamli — modern gym equipment, strength training, cardio, personal training and supplements near Bharat International School." />
-  <meta name="keywords" content="JM Kalshyan Fitness, Gym in Shamli, Best Gym Shamli, Gym near Bharat International School, Gym near Kachi Garhi, Shamli Fitness, Jony Kumar Gym" />
+  <meta name="keywords" content="JM Kalshyan Fitness, Gym in Shamli, Best Gym Shamli, Boxing Gym Shamli, Boxing Training Shamli, Gym near Bharat International School, Gym near Kachi Garhi, Shamli Fitness, Jony Kumar Gym" />
   <meta name="author" content="Jony Kumar" />
 
   <link rel="icon" type="image/png" sizes="512x512" href="/JM-KALSHYAN-FITNESS/favicon.png">
@@ -16,7 +16,7 @@
   <meta property="og:description" content="Train hard. Stay consistent. Build strength at JM Kalshyan Fitness, Shamli." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="JM Kalshyan Fitness" />
-  <meta property="og:image" content="favicon.png" />
+  <meta property="og:image" content="wide_exterior_gym_promotional_photo_scene_a_brigh.png" />
 
   <style>
     :root {
@@ -559,6 +559,315 @@
 
       .contact-box { padding: 1.5rem; }
     }
+
+    /* ===== ADVANCED GYM WEBSITE EFFECTS ===== */
+    html { scroll-padding-top: 90px; }
+
+    body {
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(250,204,21,.055), transparent 28%),
+        radial-gradient(circle at 88% 38%, rgba(250,204,21,.035), transparent 30%),
+        var(--black);
+    }
+
+    ::selection { background: var(--yellow); color: #111; }
+
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--yellow);
+      box-shadow: 0 0 14px rgba(250,204,21,.55);
+      z-index: 3000;
+    }
+
+    .navbar.scrolled {
+      box-shadow: 0 12px 35px rgba(0,0,0,.4);
+      background: rgba(5,5,5,.98);
+    }
+
+    .nav-links a { position: relative; }
+    .nav-links a:not(.nav-cta)::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -7px;
+      width: 0;
+      height: 2px;
+      background: var(--yellow);
+      transition: width .25s ease;
+    }
+    .nav-links a:not(.nav-cta):hover::after { width: 100%; }
+
+    .hero {
+      min-height: 760px;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.94) 0%, rgba(0,0,0,.73) 45%, rgba(0,0,0,.38) 100%),
+        url('wide_exterior_gym_promotional_photo_scene_a_brigh.png') center/cover no-repeat;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0 45%, rgba(250,204,21,.07) 55%, transparent 70%);
+      animation: heroSweep 10s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes heroSweep {
+      from { transform: translateX(-12%); }
+      to { transform: translateX(12%); }
+    }
+
+    .hero-content { animation: heroEnter .9s ease both; }
+
+    @keyframes heroEnter {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow { animation: glowPulse 2.8s ease-in-out infinite; }
+
+    @keyframes glowPulse {
+      0%,100% { text-shadow: 0 0 0 rgba(250,204,21,0); }
+      50% { text-shadow: 0 0 18px rgba(250,204,21,.35); }
+    }
+
+    .hero h1 { text-shadow: 0 10px 35px rgba(0,0,0,.55); }
+    .hero h1 span { text-shadow: 0 0 30px rgba(250,204,21,.18); }
+
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+      backdrop-filter: blur(12px);
+      background: rgba(23,23,23,.92);
+    }
+
+    .stat { position: relative; overflow: hidden; transition: transform .25s ease; }
+    .stat::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent, rgba(250,204,21,.08), transparent);
+      transform: translateX(-110%);
+      transition: transform .7s ease;
+    }
+    .stat:hover { transform: translateY(-2px); }
+    .stat:hover::after { transform: translateX(110%); }
+
+    .feature-banner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 1.25rem 2rem;
+    }
+
+    .feature-banner-inner {
+      min-height: 390px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(250,204,21,.2);
+      border-radius: 20px;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.94), rgba(0,0,0,.62), rgba(0,0,0,.18)),
+        url('wide_exterior_gym_promotional_photo_scene_a_brigh.png') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      padding: 3rem;
+      box-shadow: 0 25px 70px rgba(0,0,0,.28);
+    }
+
+    .feature-banner-content { max-width: 600px; position: relative; z-index: 2; }
+    .feature-banner h2 { margin: .45rem 0 1rem; font-size: clamp(2rem,4vw,3.4rem); }
+    .feature-banner p { color: #d1d1d1; max-width: 550px; }
+
+    .feature-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+      margin: 1.3rem 0 1.6rem;
+    }
+
+    .feature-badge {
+      border: 1px solid rgba(250,204,21,.25);
+      background: rgba(0,0,0,.42);
+      color: #eee;
+      padding: .45rem .7rem;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+    .feature-badge b { color: var(--yellow); }
+
+    .card, .price-card {
+      transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+    }
+
+    .card { position: relative; overflow: hidden; }
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      right: -55px;
+      top: -55px;
+      border-radius: 50%;
+      background: rgba(250,204,21,.06);
+      transition: transform .35s ease;
+    }
+    .card:hover::before { transform: scale(1.6); }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+    }
+
+    .boxing-card {
+      border-color: rgba(250,204,21,.38);
+      background: linear-gradient(145deg, rgba(250,204,21,.08), transparent 45%), var(--card);
+    }
+
+    .boxing-section { overflow: hidden; }
+
+    .boxing-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+
+    .boxing-visual {
+      min-height: 430px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.72)),
+        url('wide_exterior_gym_promotional_photo_scene_a_brigh.png') center/cover no-repeat;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .boxing-visual::after {
+      content: "BOXING";
+      position: absolute;
+      left: 1.5rem;
+      bottom: 1rem;
+      font-size: clamp(3.5rem,9vw,7rem);
+      line-height: .8;
+      font-weight: 1000;
+      letter-spacing: -4px;
+      color: rgba(255,255,255,.12);
+    }
+
+    .boxing-copy {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2rem;
+      background: linear-gradient(145deg, var(--card), #101010);
+    }
+
+    .boxing-copy h3 { font-size: 1.7rem; margin: .4rem 0 1rem; }
+
+    .boxing-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .7rem;
+      padding: 0;
+      margin: 1.5rem 0 0;
+      list-style: none;
+    }
+
+    .boxing-list li {
+      padding: .8rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255,255,255,.025);
+      color: #ccc;
+    }
+    .boxing-list li::before {
+      content: "✓";
+      color: var(--yellow);
+      font-weight: 900;
+      margin-right: .5rem;
+    }
+
+    .section-divider {
+      height: 1px;
+      max-width: var(--max);
+      margin: 0 auto;
+      background: linear-gradient(90deg, transparent, rgba(250,204,21,.35), transparent);
+    }
+
+    .gallery img {
+      transition: transform .35s ease, border-color .35s ease;
+    }
+    .gallery img:hover {
+      transform: scale(1.02);
+      border-color: rgba(250,204,21,.45);
+    }
+
+    .price-card:hover {
+      transform: translateY(-7px);
+      border-color: rgba(250,204,21,.4);
+      box-shadow: 0 18px 40px rgba(0,0,0,.28);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .floating-call {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 1200;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+      background: var(--yellow);
+      color: #111;
+      font-size: 1.2rem;
+      font-weight: 900;
+      box-shadow: 0 12px 30px rgba(0,0,0,.4);
+      animation: floatCall 2.8s ease-in-out infinite;
+    }
+
+    @keyframes floatCall {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
+    @media (max-width: 850px) {
+      .boxing-grid { grid-template-columns: 1fr; }
+      .boxing-visual { min-height: 330px; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .feature-banner-inner { padding: 1.6rem; min-height: 430px; }
+      .boxing-list { grid-template-columns: 1fr; }
+      .boxing-visual { min-height: 300px; }
+      .floating-call { width: 50px; height: 50px; right: 14px; bottom: 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
   </style>
   <script type="application/ld+json">
 {
@@ -572,6 +881,9 @@
 </head>
 
 <body>
+
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <a class="floating-call" href="tel:8650391978" aria-label="Call JM Kalshyan Fitness">☎</a>
 
   <div class="topbar">
     <div class="topbar-inner">
@@ -592,6 +904,7 @@
 
       <div class="nav-links">
         <a href="#facilities">Facilities</a>
+        <a href="#boxing">Boxing</a>
         <a href="#fees">Membership</a>
         <a href="#gallery">Gallery</a>
         <a href="#supplements">Supplements</a>
@@ -605,10 +918,10 @@
     <header class="hero">
       <div class="hero-content">
         <div class="eyebrow">Train • Transform • Repeat</div>
-        <h1>Build Your <span>Strength.</span></h1>
+        <h1>Train Hard.<br><span>Become Stronger.</span></h1>
         <p>
-          A practical, focused training environment in Shamli with modern equipment,
-          cardio, strength training, personal training and fitness essentials.
+          Shamli's training destination for strength, cardio, personal training and now boxing.
+          Build discipline, improve your fitness and keep progressing.
         </p>
 
         <div class="hero-actions">
@@ -631,6 +944,30 @@
         <div class="stat">
           <strong>Mon – Sat</strong>
           <span>Open 6 Days a Week</span>
+        </div>
+        <div class="stat">
+          <strong>BOXING</strong>
+          <span>Punching Bag Training</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-banner reveal">
+      <div class="feature-banner-inner">
+        <div class="feature-banner-content">
+          <div class="section-kicker">Welcome to JM Kalshyan Fitness</div>
+          <h2>One gym. Multiple ways to get stronger.</h2>
+          <p>
+            Train with strength equipment, cardio, personal training and our new boxing area
+            with punching bags — all under one roof.
+          </p>
+          <div class="feature-badges">
+            <span class="feature-badge"><b>01</b> Strength</span>
+            <span class="feature-badge"><b>02</b> Cardio</span>
+            <span class="feature-badge"><b>03</b> Boxing</span>
+            <span class="feature-badge"><b>04</b> Personal Training</span>
+          </div>
+          <a class="btn btn-primary" href="#boxing">Explore Boxing →</a>
         </div>
       </div>
     </div>
@@ -707,8 +1044,50 @@
           <h3>Cupping Therapy</h3>
           <p>Cupping therapy is available as an additional service at the gym.</p>
         </div>
+
+        <div class="card boxing-card">
+          <div class="icon">🥊</div>
+          <h3>Boxing & Punching Bags</h3>
+          <p>Dedicated punching bags for boxing practice, conditioning, footwork and high-intensity training.</p>
+        </div>
       </div>
     </section>
+
+    <section id="boxing" class="boxing-section">
+      <div class="section-heading reveal">
+        <div class="section-kicker">New at the gym</div>
+        <h2>Step into the boxing zone.</h2>
+        <p>Use the punching bags to add boxing drills, conditioning and intensity to your workout.</p>
+      </div>
+
+      <div class="boxing-grid">
+        <div class="boxing-visual reveal" aria-label="JM Kalshyan Fitness boxing and training environment"></div>
+
+        <div class="boxing-copy reveal">
+          <div class="section-kicker">BOXING TRAINING</div>
+          <h3>Hit the bag. Build your conditioning.</h3>
+          <p style="color:var(--muted);">
+            Boxing is now part of the JM Kalshyan Fitness experience. Add bag work after
+            strength training or use it as a focused conditioning session.
+          </p>
+
+          <ul class="boxing-list">
+            <li>Bag work</li>
+            <li>Conditioning rounds</li>
+            <li>Footwork drills</li>
+            <li>Core engagement</li>
+            <li>High-intensity sessions</li>
+            <li>Fitness-focused boxing</li>
+          </ul>
+
+          <div style="margin-top:1.5rem;">
+            <a class="btn btn-primary" href="tel:8650391978">📞 Ask About Boxing</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
 
     <section id="fees">
       <div class="section-heading">
@@ -767,6 +1146,7 @@
         <img src="gym2.jpg" alt="JM Kalshyan Fitness equipment" loading="lazy">
         <img src="gym3.jpg" alt="JM Kalshyan Fitness training area" loading="lazy">
         <img src="gym4.jpg" alt="JM Kalshyan Fitness gym facilities" loading="lazy">
+        <img src="wide_exterior_gym_promotional_photo_scene_a_brigh.png" alt="JM Kalshyan Fitness exterior" loading="lazy">
       </div>
     </section>
 
@@ -850,21 +1230,57 @@
   </footer>
 
   <script>
+    // Smooth automatic gallery movement
     const gallery = document.getElementById("galleryScroll");
     let scrollX = 0;
 
     function autoScrollGallery() {
-      if (!gallery.matches(":hover")) {
+      if (gallery && !gallery.matches(":hover")) {
         scrollX += 0.7;
         gallery.scrollLeft = scrollX;
-
-        if (scrollX >= gallery.scrollWidth - gallery.clientWidth) {
-          scrollX = 0;
-        }
+        if (scrollX >= gallery.scrollWidth - gallery.clientWidth) scrollX = 0;
       }
     }
-
     setInterval(autoScrollGallery, 25);
+
+    // Sticky navigation state
+    const navbar = document.querySelector(".navbar");
+    function updateNavbar() {
+      navbar.classList.toggle("scrolled", window.scrollY > 20);
+    }
+    window.addEventListener("scroll", updateNavbar, { passive: true });
+    updateNavbar();
+
+    // Scroll progress indicator
+    const progress = document.getElementById("scrollProgress");
+    function updateProgress() {
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      progress.style.width = max > 0 ? ((window.scrollY / max) * 100) + "%" : "0%";
+    }
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    updateProgress();
+
+    // Scroll-reveal animations
+    const revealItems = document.querySelectorAll(
+      ".reveal, .about-copy, .quote-card, .card, .price-card, .contact-box"
+    );
+
+    revealItems.forEach((el, index) => {
+      if (!el.classList.contains("reveal")) el.classList.add("reveal");
+      el.style.transitionDelay = Math.min(index * 35, 180) + "ms";
+    });
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealItems.forEach(el => observer.observe(el));
   </script>
 
 </body>
