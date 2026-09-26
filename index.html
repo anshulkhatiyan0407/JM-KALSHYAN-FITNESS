@@ -1185,7 +1185,7 @@
         </p>
 
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#member-portal">Check Fee Status →</a>
+          <a class="btn btn-primary" href="#member-status">Check Fee Status →</a>
           <a class="btn btn-outline" href="https://maps.app.goo.gl/kJbjvxd15yig2YH39?g_st=awb" target="_blank" rel="noopener noreferrer">📍 Get Directions</a>
         </div>
       </div>
@@ -1688,6 +1688,10 @@
             "No member was found with that mobile number. Please check the number or contact the gym.",
             true
           );
+          document.getElementById("memberResult").scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
           return;
         }
 
@@ -1697,6 +1701,12 @@
         }
 
         renderMember(Array.isArray(data) ? data[0] : data);
+
+        // Bring the fee result into view automatically after checking.
+        document.getElementById("memberResult").scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
       } catch (error) {
         showMemberMessage("We could not check your status right now. Please try again or contact the gym.", true);
         console.error(error);
