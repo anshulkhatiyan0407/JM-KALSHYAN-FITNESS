@@ -236,6 +236,20 @@
       .btn-danger { width: 100%; }
     }
 
+
+    .search-toggle-btn {
+      width: 100%;
+      margin: 4px 0 14px;
+      min-height: 48px;
+    }
+    #saveStatus {
+      width: 100%;
+      margin-top: 12px;
+    }
+    #searchPanel[hidden] {
+      display: none !important;
+    }
+
 </style>
 </head>
 <body>
@@ -289,7 +303,11 @@
       <h2 class="section-title">Add / Update Member</h2>
       <div class="status" id="saveStatus"></div>
 
-      <div class="search-panel">
+      <button class="btn btn-outline search-toggle-btn" id="showSearchBtn" type="button">
+        Search Existing Member
+      </button>
+
+      <div class="search-panel" id="searchPanel" hidden>
         <div class="field">
           <label for="searchValue">Search Existing Member</label>
           <input id="searchValue" type="text" placeholder="Enter JM-001 or mobile number">
@@ -350,6 +368,7 @@
           <button class="btn btn-primary" id="saveBtn" type="submit">Add / Update Member</button>
           <button class="btn btn-outline" id="clearBtn" type="button">Clear Form</button>
         </div>
+        <div id="saveStatus" class="status" aria-live="polite"></div>
       </form>
 
       <div class="danger-zone">
@@ -426,6 +445,7 @@
       }
 
       accessToken = data.access_token;
+      resetAllAdminControls();
       currentEmail = email;
 
       sessionStorage.setItem("jm_admin_access_token", accessToken);
@@ -455,6 +475,24 @@
 
 
   let currentMemberId = null;
+
+  function clearLoginCredentials() {
+    try {
+      sessionStorage.removeItem("jm_admin_access_token");
+    } catch (e) {}
+    accessToken = null;
+    if (typeof loginForm !== "undefined" && loginForm) loginForm.reset();
+  }
+
+  function resetAllAdminControls() {
+    clearMemberForm();
+    document.getElementById("searchValue").value = "";
+    document.getElementById("searchPanel").hidden = true;
+    document.getElementById("showSearchBtn").textContent = "Search Existing Member";
+    clearStatus(memberSearchStatus);
+    clearStatus(saveStatus);
+  }
+
 
   function getFormData() {
     const name = document.getElementById("memberName").value.trim();
@@ -555,17 +593,16 @@
         throw new Error("Could not save the member. Please check the details.");
       }
 
-      currentMemberId = memberId;
-      document.getElementById("memberId").value = memberId;
-      deleteBtn.disabled = false;
+      const successMessage = currentMemberId && method === "PATCH"
+        ? `${memberId} — ${data.name} was updated successfully.`
+        : `${memberId} — ${data.name} was added successfully.`;
 
-      showStatus(
-        saveStatus,
-        currentMemberId && method === "PATCH"
-          ? `${memberId} — ${data.name} was updated successfully.`
-          : `${memberId} — ${data.name} was added successfully.`,
-        "ok"
-      );
+      // Show success below the Add / Update buttons, then clear all member controls.
+      showStatus(saveStatus, successMessage, "ok");
+      clearMemberForm();
+      document.getElementById("searchValue").value = "";
+      document.getElementById("searchPanel").hidden = true;
+      document.getElementById("showSearchBtn").textContent = "Search Existing Member";
     } catch (error) {
       showStatus(saveStatus, error.message || "Could not save member.", "error");
     } finally {
@@ -722,13 +759,29 @@
     setAdminVisible(true);
   }
 
+  document.getElementById("showSearchBtn").addEventListener("click", () => {
+    const panel = document.getElementById("searchPanel");
+    panel.hidden = !panel.hidden;
+    document.getElementById("showSearchBtn").textContent =
+      panel.hidden ? "Search Existing Member" : "Hide Search";
+    if (!panel.hidden) document.getElementById("searchValue").focus();
+  });
+
   document.getElementById("searchBtn").addEventListener("click", searchMember);
   document.getElementById("deleteBtn").addEventListener("click", deleteMember);
+
   document.getElementById("clearBtn").addEventListener("click", () => {
     clearMemberForm();
+    document.getElementById("searchValue").value = "";
+    document.getElementById("searchPanel").hidden = true;
+    document.getElementById("showSearchBtn").textContent = "Search Existing Member";
     clearStatus(saveStatus);
     clearStatus(memberSearchStatus);
   });
+
+  // Never keep the admin session or entered member data when leaving the page.
+  window.addEventListener("pagehide", clearLoginCredentials);
+  window.addEventListener("beforeunload", clearLoginCredentials);
 
 </script>
 </body>
