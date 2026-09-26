@@ -852,6 +852,209 @@
       }
     }
 
+
+    /* ===== MEMBER FEE PORTAL ===== */
+    .member-portal {
+      background:
+        radial-gradient(circle at 15% 20%, rgba(250,204,21,.08), transparent 28%),
+        linear-gradient(145deg, #121212, #090909);
+      border: 1px solid rgba(250,204,21,.22);
+      border-radius: 20px;
+      padding: 2.2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,.28);
+    }
+
+    .member-portal-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .member-form {
+      background: rgba(0,0,0,.28);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem;
+    }
+
+    .member-form label {
+      display: block;
+      color: #ddd;
+      font-size: .85rem;
+      font-weight: 800;
+      margin-bottom: .45rem;
+    }
+
+    .member-form input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.15);
+      background: #0b0b0b;
+      color: #fff;
+      border-radius: 9px;
+      padding: .85rem 1rem;
+      font: inherit;
+      outline: none;
+      margin-bottom: 1rem;
+    }
+
+    .member-form input:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 3px rgba(250,204,21,.08);
+    }
+
+    .member-form small {
+      display: block;
+      color: #888;
+      margin-top: -.65rem;
+      margin-bottom: 1rem;
+      font-size: .76rem;
+    }
+
+    .member-result {
+      min-height: 260px;
+      background: #0c0c0c;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .member-result.empty {
+      color: #888;
+      text-align: center;
+    }
+
+    .member-result .result-label {
+      color: var(--yellow);
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 900;
+    }
+
+    .member-result h3 {
+      margin: .35rem 0 1rem;
+      font-size: 1.7rem;
+    }
+
+    .member-status {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      width: fit-content;
+      padding: .45rem .7rem;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 900;
+      margin-bottom: 1.1rem;
+    }
+
+    .member-status.paid {
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.35);
+      color: #86efac;
+    }
+
+    .member-status.due {
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.35);
+      color: #fca5a5;
+    }
+
+    .member-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .8rem;
+    }
+
+    .member-detail {
+      background: #151515;
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: .75rem;
+    }
+
+    .member-detail span {
+      display: block;
+      color: #888;
+      font-size: .72rem;
+      margin-bottom: .2rem;
+    }
+
+    .member-detail strong {
+      display: block;
+      color: #eee;
+      font-size: .92rem;
+    }
+
+    .member-error {
+      color: #fca5a5;
+      background: rgba(239,68,68,.08);
+      border: 1px solid rgba(239,68,68,.22);
+      border-radius: 10px;
+      padding: .8rem;
+      font-size: .86rem;
+    }
+
+    .member-note {
+      margin-top: 1rem;
+      color: #888;
+      font-size: .76rem;
+      line-height: 1.5;
+    }
+
+    .admin-box {
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    .admin-box summary {
+      cursor: pointer;
+      color: var(--yellow);
+      font-weight: 800;
+    }
+
+    .admin-panel {
+      margin-top: 1rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .admin-panel textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      border: 1px solid rgba(255,255,255,.12);
+      background: #0b0b0b;
+      color: #ddd;
+      border-radius: 9px;
+      padding: .9rem;
+      font: .82rem/1.5 Consolas, monospace;
+    }
+
+    .config-warning {
+      margin-top: 1rem;
+      padding: .8rem;
+      border-radius: 10px;
+      background: rgba(250,204,21,.08);
+      border: 1px solid rgba(250,204,21,.2);
+      color: #d4d4d4;
+      font-size: .8rem;
+    }
+
+    @media (max-width: 800px) {
+      .member-portal-grid { grid-template-columns: 1fr; }
+      .member-portal { padding: 1.3rem; }
+    }
+
+    @media (max-width: 480px) {
+      .member-details { grid-template-columns: 1fr; }
+    }
+
   </style>
   <script type="application/ld+json">
 {
@@ -889,6 +1092,7 @@
       <div class="nav-links">
         <a href="#facilities">Facilities</a>
         <a href="#fees">Membership</a>
+        <a href="#member-status">💳 Check Fee</a>
         <a href="#gallery">Gallery</a>
         <a href="#supplements">Supplements</a>
         <a href="#contact" class="nav-cta">Contact Us</a>
@@ -1108,6 +1312,74 @@
       </p>
     </section>
 
+
+    <section id="member-status">
+      <div class="section-heading">
+        <div class="section-kicker">Member Portal</div>
+        <h2>Check your membership fee.</h2>
+        <p>Enter your JM Member ID and the last 4 digits of your registered mobile number.</p>
+      </div>
+
+      <div class="member-portal">
+        <div class="member-portal-grid">
+          <div class="member-form">
+            <label for="memberId">JM Member ID</label>
+            <input id="memberId" type="text" placeholder="Example: JM-001" maxlength="20" autocomplete="off">
+
+            <label for="memberPin">Last 4 digits of registered mobile</label>
+            <input id="memberPin" type="password" inputmode="numeric" placeholder="Example: 1978" maxlength="4" autocomplete="off">
+            <small>Use the mobile number registered with the gym.</small>
+
+            <button class="btn btn-primary" id="checkMemberBtn" type="button" style="width:100%;">
+              Check Fee Status →
+            </button>
+
+            <div class="config-warning" id="memberConfigWarning" hidden>
+              The member portal still needs the database connection to be configured. Follow the setup steps provided with this website.
+            </div>
+
+            <p class="member-note">
+              For privacy, the website does not ask members to enter their full phone number.
+              If you have forgotten your Member ID, please contact the gym.
+            </p>
+          </div>
+
+          <div class="member-result empty" id="memberResult">
+            Enter your Member ID to see your current membership status.
+          </div>
+        </div>
+
+        <details class="admin-box">
+          <summary>Gym Admin — Member Management</summary>
+          <div class="admin-panel">
+            <p style="color:#aaa;margin:0;font-size:.86rem;">
+              This area is intended for the gym owner/admin after the secure database is configured.
+              Do not publish member data directly in this HTML file.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <input id="adminEmail" type="email" placeholder="Admin email" style="width:100%;padding:.8rem;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:#0b0b0b;color:#fff;">
+              <input id="adminPassword" type="password" placeholder="Admin password" style="width:100%;padding:.8rem;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:#0b0b0b;color:#fff;">
+            </div>
+            <button class="btn btn-outline" id="adminLoginBtn" type="button">Admin Login</button>
+            <textarea id="adminJson" placeholder='Example member record:
+{
+  "member_id": "JM-001",
+  "name": "Rahul Kumar",
+  "plan": "1 Month",
+  "amount": 600,
+  "paid": true,
+  "paid_month": "September 2026",
+  "paid_date": "2026-09-05",
+  "due_date": "2026-10-05",
+  "mobile_last4": "1978"
+}'></textarea>
+            <button class="btn btn-primary" id="saveMemberBtn" type="button">Save / Update Member</button>
+            <div id="adminMessage" style="font-size:.82rem;color:#aaa;"></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
     <section id="gallery">
       <div class="section-heading">
         <div class="section-kicker">Inside JM Kalshyan Fitness</div>
@@ -1203,6 +1475,236 @@
   </footer>
 
   <script>
+
+    /* ===== MEMBER FEE PORTAL =====
+       After creating the Supabase project, replace these two values.
+       The anon key is designed for browser use when Row Level Security is configured correctly.
+    */
+    const SUPABASE_URL = "https://pebtoynxxoqagsgdocnf.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_-611S6bVByEKVupn8S_OJw_s95F4KUC";
+
+    const memberIdInput = document.getElementById("memberId");
+    const memberPinInput = document.getElementById("memberPin");
+    const memberResult = document.getElementById("memberResult");
+    const checkMemberBtn = document.getElementById("checkMemberBtn");
+    const memberConfigWarning = document.getElementById("memberConfigWarning");
+
+    const adminEmail = document.getElementById("adminEmail");
+    const adminPassword = document.getElementById("adminPassword");
+    const adminLoginBtn = document.getElementById("adminLoginBtn");
+    const adminJson = document.getElementById("adminJson");
+    const saveMemberBtn = document.getElementById("saveMemberBtn");
+    const adminMessage = document.getElementById("adminMessage");
+
+    let adminAccessToken = null;
+
+    function supabaseReady() {
+      return SUPABASE_URL.startsWith("https://") &&
+             !SUPABASE_URL.includes("PASTE_") &&
+             SUPABASE_ANON_KEY.length > 20 &&
+             !SUPABASE_ANON_KEY.includes("PASTE_");
+    }
+
+    function showMemberMessage(message, isError = false) {
+      memberResult.className = "member-result" + (isError ? "" : " empty");
+      memberResult.innerHTML = isError
+        ? `<div class="member-error">${message}</div>`
+        : message;
+    }
+
+    function safeDate(value) {
+      if (!value) return "—";
+      const d = new Date(value + "T00:00:00");
+      if (Number.isNaN(d.getTime())) return value;
+      return d.toLocaleDateString("en-IN", {
+        day: "2-digit", month: "short", year: "numeric"
+      });
+    }
+
+    function renderMember(member) {
+      const paid = member.paid === true;
+      memberResult.className = "member-result";
+      memberResult.innerHTML = `
+        <div class="result-label">Membership Status</div>
+        <h3>${member.name || "Member"}</h3>
+        <div class="member-status ${paid ? "paid" : "due"}">
+          ${paid ? "✓ FEE PAID" : "⚠ PAYMENT DUE"}
+        </div>
+        <div class="member-details">
+          <div class="member-detail"><span>Member ID</span><strong>${member.member_id}</strong></div>
+          <div class="member-detail"><span>Plan</span><strong>${member.plan || "—"}</strong></div>
+          <div class="member-detail"><span>Amount</span><strong>₹${Number(member.amount || 0).toLocaleString("en-IN")}</strong></div>
+          <div class="member-detail"><span>Paid For</span><strong>${member.paid_month || "—"}</strong></div>
+          <div class="member-detail"><span>Paid On</span><strong>${safeDate(member.paid_date)}</strong></div>
+          <div class="member-detail"><span>Next Due Date</span><strong>${safeDate(member.due_date)}</strong></div>
+        </div>
+        <p class="member-note">
+          ${paid
+            ? "Your membership fee is currently marked as paid."
+            : "Your membership fee is currently due. Please contact the gym to renew."}
+        </p>
+      `;
+    }
+
+    async function checkMember() {
+      const memberId = memberIdInput.value.trim().toUpperCase();
+      const last4 = memberPinInput.value.trim();
+
+      if (!/^JM-\d{3,}$/.test(memberId)) {
+        showMemberMessage("Please enter a valid Member ID such as JM-001.", true);
+        return;
+      }
+
+      if (!/^\d{4}$/.test(last4)) {
+        showMemberMessage("Please enter the last 4 digits of your registered mobile number.", true);
+        return;
+      }
+
+      if (!supabaseReady()) {
+        memberConfigWarning.hidden = false;
+        showMemberMessage("The member portal is not connected to the database yet. Complete the Supabase setup first.", true);
+        return;
+      }
+
+      checkMemberBtn.disabled = true;
+      checkMemberBtn.textContent = "Checking…";
+      showMemberMessage("Checking your membership…");
+
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/check_member_status`, {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            p_member_id: memberId,
+            p_mobile_last4: last4
+          })
+        });
+
+        if (!response.ok) throw new Error("Unable to check membership.");
+        const data = await response.json();
+
+        if (!data || (Array.isArray(data) && data.length === 0)) {
+          showMemberMessage("No matching member was found. Check your Member ID and mobile digits.", true);
+          return;
+        }
+
+        renderMember(Array.isArray(data) ? data[0] : data);
+      } catch (error) {
+        showMemberMessage("We could not check your status right now. Please try again or contact the gym.", true);
+        console.error(error);
+      } finally {
+        checkMemberBtn.disabled = false;
+        checkMemberBtn.textContent = "Check Fee Status →";
+      }
+    }
+
+    async function adminLogin() {
+      if (!supabaseReady()) {
+        adminMessage.textContent = "Configure the Supabase URL and anon key first.";
+        return;
+      }
+
+      adminLoginBtn.disabled = true;
+      adminMessage.textContent = "Signing in…";
+
+      try {
+        const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: adminEmail.value.trim(),
+            password: adminPassword.value
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.access_token) {
+          throw new Error(data.msg || data.error_description || "Login failed.");
+        }
+
+        adminAccessToken = data.access_token;
+        adminMessage.textContent = "Admin login successful. You can now save member records.";
+      } catch (error) {
+        adminAccessToken = null;
+        adminMessage.textContent = error.message || "Admin login failed.";
+      } finally {
+        adminLoginBtn.disabled = false;
+      }
+    }
+
+    async function saveMember() {
+      if (!adminAccessToken) {
+        adminMessage.textContent = "Please log in as admin first.";
+        return;
+      }
+
+      let record;
+      try {
+        record = JSON.parse(adminJson.value);
+      } catch {
+        adminMessage.textContent = "Invalid JSON. Please check the member record.";
+        return;
+      }
+
+      if (!/^JM-\d{3,}$/.test(record.member_id || "")) {
+        adminMessage.textContent = "Member ID must look like JM-001.";
+        return;
+      }
+
+      if (!/^\d{4}$/.test(String(record.mobile_last4 || ""))) {
+        adminMessage.textContent = "Add mobile_last4 as exactly 4 digits.";
+        return;
+      }
+
+      saveMemberBtn.disabled = true;
+      adminMessage.textContent = "Saving…";
+
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/members?on_conflict=member_id`, {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${adminAccessToken}`,
+            "Content-Type": "application/json",
+            "Prefer": "resolution=merge-duplicates,return=minimal"
+          },
+          body: JSON.stringify(record)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Could not save member.");
+        }
+
+        adminMessage.textContent = `${record.member_id} saved successfully.`;
+        adminJson.value = "";
+      } catch (error) {
+        adminMessage.textContent = error.message || "Could not save member.";
+      } finally {
+        saveMemberBtn.disabled = false;
+      }
+    }
+
+    checkMemberBtn.addEventListener("click", checkMember);
+    memberPinInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") checkMember();
+    });
+    memberIdInput.addEventListener("input", () => {
+      memberIdInput.value = memberIdInput.value.toUpperCase();
+    });
+    adminLoginBtn.addEventListener("click", adminLogin);
+    saveMemberBtn.addEventListener("click", saveMember);
+
+    if (!supabaseReady()) memberConfigWarning.hidden = false;
+
+
     // Smooth automatic gallery movement
     const gallery = document.getElementById("galleryScroll");
     let scrollX = 0;
