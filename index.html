@@ -1559,27 +1559,62 @@
       });
     }
 
+    let submittedMobileNumber = "";
+
     function renderMember(member) {
-      const paid = member.paid === true;
+      const currentPaid = member.current_fee_paid === true;
+      const oldDue = Number(member.old_due || 0);
+      const currentFee = Number(member.fee || 0);
+      const totalDue = oldDue + (currentPaid ? 0 : currentFee);
+
       memberResult.className = "member-result";
       memberResult.innerHTML = `
-        <div class="result-label">Membership Status</div>
+        <div class="result-label">MEMBERSHIP STATUS</div>
         <h3>${member.name || "Member"}</h3>
-        <div class="member-status ${paid ? "paid" : "due"}">
-          ${paid ? "✓ FEE PAID" : "⚠ PAYMENT DUE"}
+
+        <div class="member-status ${currentPaid ? "paid" : "due"}">
+          ${currentPaid ? "✓ PAYMENT PAID" : "⚠ PAYMENT DUE"}
         </div>
+
         <div class="member-details">
-          <div class="member-detail"><span>Member ID</span><strong>${member.member_id}</strong></div>
-          <div class="member-detail"><span>Plan</span><strong>${member.plan || "—"}</strong></div>
-          <div class="member-detail"><span>Amount</span><strong>₹${Number(member.amount || 0).toLocaleString("en-IN")}</strong></div>
-          <div class="member-detail"><span>Paid For</span><strong>${member.paid_month || "—"}</strong></div>
-          <div class="member-detail"><span>Paid On</span><strong>${safeDate(member.paid_date)}</strong></div>
-          <div class="member-detail"><span>Next Due Date</span><strong>${safeDate(member.due_date)}</strong></div>
+          <div class="member-detail">
+            <span>Member ID</span>
+            <strong>${member.member_id || "—"}</strong>
+          </div>
+          <div class="member-detail">
+            <span>Village</span>
+            <strong>${member.village || "—"}</strong>
+          </div>
+          <div class="member-detail">
+            <span>Mobile Number</span>
+            <strong>${member.mobile_number || submittedMobileNumber || "—"}</strong>
+          </div>
+          <div class="member-detail">
+            <span>Date of Joining</span>
+            <strong>${member.joining_date ? new Date(member.joining_date + "T00:00:00").toLocaleDateString("en-IN") : "—"}</strong>
+          </div>
+          <div class="member-detail">
+            <span>Monthly Fee</span>
+            <strong>₹${currentFee.toLocaleString("en-IN")}</strong>
+          </div>
+          <div class="member-detail">
+            <span>Current Month</span>
+            <strong>${currentPaid ? "Paid" : "Due"}</strong>
+          </div>
+          <div class="member-detail">
+            <span>Old Due</span>
+            <strong>₹${oldDue.toLocaleString("en-IN")}</strong>
+          </div>
+          <div class="member-detail total-due">
+            <span>Total Amount Due</span>
+            <strong>₹${totalDue.toLocaleString("en-IN")}</strong>
+          </div>
         </div>
+
         <p class="member-note">
-          ${paid
-            ? "Your membership fee is currently marked as paid."
-            : "Your membership fee is currently due. Please contact the gym to renew."}
+          ${totalDue > 0
+            ? `Total amount currently due: <strong>₹${totalDue.toLocaleString("en-IN")}</strong>. Please contact the gym for payment.`
+            : "Your membership fee is fully up to date."}
         </p>
       `;
     }
