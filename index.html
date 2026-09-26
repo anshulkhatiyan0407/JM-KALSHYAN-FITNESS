@@ -1659,13 +1659,34 @@
           throw new Error("Unable to check membership.");
         }
 
-        const data = await response.json();
+        let data = await response.json();
+
+        // If a member entered a first name (for example "Sawan") while the
+        // database stores the full name (for example "Sawan Namdev"), retry
+        // using the mobile number only. Mobile number is the required
+        // identifier, while the name is an additional check.
+        if ((!data || (Array.isArray(data) && data.length === 0)) && memberName) {
+          const mobileOnlyResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/check_member_status`, {
+            method: "POST",
+            headers: {
+              "apikey": SUPABASE_ANON_KEY,
+              "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              p_name: null,
+              p_mobile_number: mobileNumber
+            })
+          });
+
+          if (mobileOnlyResponse.ok) {
+            data = await mobileOnlyResponse.json();
+          }
+        }
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
           showMemberMessage(
-            memberName
-              ? "No member was found with that name and mobile number. Please check the details or try using only the mobile number."
-              : "No member was found with that mobile number. Please check the number or contact the gym.",
+            "No member was found with that mobile number. Please check the number or contact the gym.",
             true
           );
           return;
