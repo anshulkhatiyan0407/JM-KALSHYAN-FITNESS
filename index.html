@@ -1104,36 +1104,6 @@
       line-height: 1.5;
     }
 
-    .admin-box {
-      margin-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      padding-top: 1.5rem;
-    }
-
-    .admin-box summary {
-      cursor: pointer;
-      color: var(--yellow);
-      font-weight: 800;
-    }
-
-    .admin-panel {
-      margin-top: 1rem;
-      display: grid;
-      gap: 1rem;
-    }
-
-    .admin-panel textarea {
-      width: 100%;
-      min-height: 130px;
-      resize: vertical;
-      border: 1px solid rgba(255,255,255,.12);
-      background: #0b0b0b;
-      color: #ddd;
-      border-radius: 9px;
-      padding: .9rem;
-      font: .82rem/1.5 Consolas, monospace;
-    }
-
     .config-warning {
       margin-top: 1rem;
       padding: .8rem;
@@ -1193,7 +1163,7 @@
         <a href="#member-status">Check Fee</a>
         <a href="#gallery">Gallery</a>
         <a href="#supplements">Supplements</a>
-        <a href="#member-admin" class="admin-nav-link">Admin Login</a>
+        <a href="admin.html" class="admin-nav-link">Admin Login</a>
         <a href="#contact" class="nav-cta">Contact Us</a>
       </div>
 
@@ -1453,34 +1423,7 @@
           </div>
         </div>
 
-        <details class="admin-box" id="member-admin">
-          <summary>Gym Admin — Member Management</summary>
-          <div class="admin-panel">
-            <p style="color:#aaa;margin:0;font-size:.86rem;">
-              This area is intended for the gym owner/admin after the secure database is configured.
-              Do not publish member data directly in this HTML file.
-            </p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-              <input id="adminEmail" type="email" placeholder="Admin email" style="width:100%;padding:.8rem;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:#0b0b0b;color:#fff;">
-              <input id="adminPassword" type="password" placeholder="Admin password" style="width:100%;padding:.8rem;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:#0b0b0b;color:#fff;">
-            </div>
-            <button class="btn btn-outline" id="adminLoginBtn" type="button">Admin Login</button>
-            <textarea id="adminJson" placeholder='Example member record:
-{
-  "member_id": "JM-001",
-  "name": "Rahul Kumar",
-  "plan": "1 Month",
-  "amount": 600,
-  "paid": true,
-  "paid_month": "September 2026",
-  "paid_date": "2026-09-05",
-  "due_date": "2026-10-05",
-  "mobile_last4": "1978"
-}'></textarea>
-            <button class="btn btn-primary" id="saveMemberBtn" type="button">Save / Update Member</button>
-            <div id="adminMessage" style="font-size:.82rem;color:#aaa;"></div>
-          </div>
-        </details>
+
       </div>
     </section>
 
@@ -1591,14 +1534,7 @@
     const checkMemberBtn = document.getElementById("checkMemberBtn");
     const memberConfigWarning = document.getElementById("memberConfigWarning");
 
-    const adminEmail = document.getElementById("adminEmail");
-    const adminPassword = document.getElementById("adminPassword");
-    const adminLoginBtn = document.getElementById("adminLoginBtn");
-    const adminJson = document.getElementById("adminJson");
-    const saveMemberBtn = document.getElementById("saveMemberBtn");
-    const adminMessage = document.getElementById("adminMessage");
 
-    let adminAccessToken = null;
 
     function supabaseReady() {
       return SUPABASE_URL.startsWith("https://") &&
@@ -1715,95 +1651,6 @@
       }
     }
 
-    async function adminLogin() {
-      if (!supabaseReady()) {
-        adminMessage.textContent = "Configure the Supabase URL and anon key first.";
-        return;
-      }
-
-      adminLoginBtn.disabled = true;
-      adminMessage.textContent = "Signing in…";
-
-      try {
-        const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-          method: "POST",
-          headers: {
-            "apikey": SUPABASE_ANON_KEY,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: adminEmail.value.trim(),
-            password: adminPassword.value
-          })
-        });
-
-        const data = await response.json();
-        if (!response.ok || !data.access_token) {
-          throw new Error(data.msg || data.error_description || "Login failed.");
-        }
-
-        adminAccessToken = data.access_token;
-        adminMessage.textContent = "Admin login successful. You can now save member records.";
-      } catch (error) {
-        adminAccessToken = null;
-        adminMessage.textContent = error.message || "Admin login failed.";
-      } finally {
-        adminLoginBtn.disabled = false;
-      }
-    }
-
-    async function saveMember() {
-      if (!adminAccessToken) {
-        adminMessage.textContent = "Please log in as admin first.";
-        return;
-      }
-
-      let record;
-      try {
-        record = JSON.parse(adminJson.value);
-      } catch {
-        adminMessage.textContent = "Invalid JSON. Please check the member record.";
-        return;
-      }
-
-      if (!/^JM-\d{3,}$/.test(record.member_id || "")) {
-        adminMessage.textContent = "Member ID must look like JM-001.";
-        return;
-      }
-
-      if (!/^\d{4}$/.test(String(record.mobile_last4 || ""))) {
-        adminMessage.textContent = "Add mobile_last4 as exactly 4 digits.";
-        return;
-      }
-
-      saveMemberBtn.disabled = true;
-      adminMessage.textContent = "Saving…";
-
-      try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/members?on_conflict=member_id`, {
-          method: "POST",
-          headers: {
-            "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${adminAccessToken}`,
-            "Content-Type": "application/json",
-            "Prefer": "resolution=merge-duplicates,return=minimal"
-          },
-          body: JSON.stringify(record)
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(errorText || "Could not save member.");
-        }
-
-        adminMessage.textContent = `${record.member_id} saved successfully.`;
-        adminJson.value = "";
-      } catch (error) {
-        adminMessage.textContent = error.message || "Could not save member.";
-      } finally {
-        saveMemberBtn.disabled = false;
-      }
-    }
 
     checkMemberBtn.addEventListener("click", checkMember);
     document.getElementById("memberName").addEventListener("keydown", e => {
@@ -1820,8 +1667,6 @@
     document.getElementById("memberMobile").addEventListener("input", e => {
       e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
     });
-    adminLoginBtn.addEventListener("click", adminLogin);
-    saveMemberBtn.addEventListener("click", saveMember);
 
     if (!supabaseReady()) memberConfigWarning.hidden = false;
 
