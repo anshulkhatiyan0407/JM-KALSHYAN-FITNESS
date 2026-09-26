@@ -201,7 +201,42 @@
       main { padding:2.5rem 1rem; }
       .admin-card,.auth-card { padding:1.2rem; }
     }
-  </style>
+  
+    .search-panel {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: end;
+      margin-bottom: 8px;
+    }
+    .search-btn { min-height: 48px; }
+    .danger-zone {
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid rgba(255, 70, 70, .35);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .danger-zone strong { color: #ff7777; }
+    .danger-zone p { margin: 5px 0 0; color: #aaa; font-size: 13px; }
+    .btn-danger {
+      background: #7d1f1f;
+      color: #fff;
+      border: 1px solid #b83a3a;
+      min-width: 150px;
+    }
+    .btn-danger:hover { background: #a72828; }
+    .btn-danger:disabled { opacity: .45; cursor: not-allowed; }
+    @media (max-width: 700px) {
+      .search-panel { grid-template-columns: 1fr; }
+      .danger-zone { flex-direction: column; align-items: stretch; }
+      .btn-danger { width: 100%; }
+    }
+
+</style>
 </head>
 <body>
 
@@ -254,6 +289,17 @@
       <h2 class="section-title">Add / Update Member</h2>
       <div class="status" id="saveStatus"></div>
 
+      <div class="search-panel">
+        <div class="field">
+          <label for="searchValue">Search Existing Member</label>
+          <input id="searchValue" type="text" placeholder="Enter JM-001 or mobile number">
+          <div class="hint">Use Member ID or the member's full mobile number.</div>
+        </div>
+        <button class="btn btn-outline search-btn" id="searchBtn" type="button">Search Member</button>
+      </div>
+
+      <div id="memberSearchStatus" class="status" aria-live="polite"></div>
+
       <form id="memberForm" class="form-grid">
         <div class="field">
           <label for="memberName">Full Name <span class="required">*</span></label>
@@ -296,8 +342,8 @@
 
         <div class="field">
           <label for="memberId">JM Member ID</label>
-          <input id="memberId" type="text" placeholder="Leave blank for automatic ID" maxlength="20">
-          <div class="hint">Leave blank to automatically assign the next JM-XXX ID.</div>
+          <input id="memberId" type="text" placeholder="Auto-generated for new member" maxlength="20" readonly>
+          <div class="hint">Generated automatically when a new member is added.</div>
         </div>
 
         <div class="form-actions">
@@ -305,6 +351,14 @@
           <button class="btn btn-outline" id="clearBtn" type="button">Clear Form</button>
         </div>
       </form>
+
+      <div class="danger-zone">
+        <div>
+          <strong>Delete Member</strong>
+          <p>Use this only when you want to permanently remove a member record.</p>
+        </div>
+        <button class="btn btn-danger" id="deleteBtn" type="button" disabled>Delete Member</button>
+      </div>
     </section>
   </main>
 
@@ -400,15 +454,9 @@
   }
 
 
-  async function saveMember(event) {
-    event.preventDefault();
+  let currentMemberId = null;
 
-    if (!accessToken) {
-      showStatus(saveStatus, "Please log in again.", "error");
-      return;
-    }
-
-    const memberIdInput = document.getElementById("memberId").value.trim().toUpperCase();
+  function getFormData() {
     const name = document.getElementById("memberName").value.trim();
     const village = document.getElementById("village").value.trim() || null;
     const mobileNumber = document.getElementById("mobileNumber").value.trim();
@@ -419,44 +467,43 @@
     const oldDueValue = document.getElementById("oldDue").value.trim();
     const oldDue = oldDueValue === "" ? 0 : Number(oldDueValue);
 
-    if (!name) {
-      showStatus(saveStatus, "Full Name is required.", "error");
+    return { name, village, mobileNumber, joiningDate, fee, currentFeePaid, oldDue };
+  }
+
+  function validateForm(data) {
+    if (!data.name) return "Full Name is required.";
+    if (!/^\d{10}$/.test(data.mobileNumber)) return "Mobile number must contain exactly 10 digits.";
+    if (data.fee !== null && (!Number.isFinite(data.fee) || data.fee < 0)) return "Fee must be a valid amount.";
+    if (!Number.isFinite(data.oldDue) || data.oldDue < 0) return "Old Due must be zero or a positive amount.";
+    return null;
+  }
+
+  async function saveMember(event) {
+    event.preventDefault();
+
+    if (!accessToken) {
+      showStatus(saveStatus, "Please log in again.", "error");
       return;
     }
 
-    if (!/^\d{10}$/.test(mobileNumber)) {
-      showStatus(saveStatus, "Mobile number must contain exactly 10 digits.", "error");
-      return;
-    }
-
-    if (memberIdInput && !/^JM-\d{3,}$/.test(memberIdInput)) {
-      showStatus(saveStatus, "Member ID must look like JM-001.", "error");
-      return;
-    }
-
-    if (fee !== null && (!Number.isFinite(fee) || fee < 0)) {
-      showStatus(saveStatus, "Fee must be a valid amount.", "error");
-      return;
-    }
-
-    if (!Number.isFinite(oldDue) || oldDue < 0) {
-      showStatus(saveStatus, "Old Due must be zero or a positive amount.", "error");
+    const data = getFormData();
+    const validationError = validateForm(data);
+    if (validationError) {
+      showStatus(saveStatus, validationError, "error");
       return;
     }
 
     saveBtn.disabled = true;
-    saveBtn.textContent = "Saving…";
+    saveBtn.textContent = currentMemberId ? "Updating…" : "Adding…";
     clearStatus(saveStatus);
 
     try {
-      // If the admin leaves Member ID blank, ask Supabase for the next available JM-XXX.
-      let memberId = memberIdInput;
+      let memberId = currentMemberId;
 
       if (!memberId) {
         const nextResponse = await fetch(
           `${SUPABASE_URL}/rest/v1/members?select=member_id&order=member_id.desc&limit=1000`,
           {
-            method: "GET",
             headers: {
               "apikey": SUPABASE_ANON_KEY,
               "Authorization": `Bearer ${accessToken}`
@@ -477,47 +524,172 @@
 
       const record = {
         member_id: memberId,
-        name,
-        village,
-        mobile_number: mobileNumber,
-        joining_date: joiningDate,
-        fee,
-        current_fee_paid: currentFeePaid,
-        old_due: oldDue
+        name: data.name,
+        village: data.village,
+        mobile_number: data.mobileNumber,
+        joining_date: data.joiningDate,
+        fee: data.fee,
+        current_fee_paid: data.currentFeePaid,
+        old_due: data.oldDue
       };
 
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/members?on_conflict=member_id`, {
-        method: "POST",
+      const method = currentMemberId ? "PATCH" : "POST";
+      const url = currentMemberId
+        ? `${SUPABASE_URL}/rest/v1/members?member_id=eq.${encodeURIComponent(memberId)}`
+        : `${SUPABASE_URL}/rest/v1/members`;
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "apikey": SUPABASE_ANON_KEY,
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json",
-          "Prefer": "resolution=merge-duplicates,return=minimal"
+          "Prefer": "return=minimal"
         },
         body: JSON.stringify(record)
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Save member error:", errorText);
-
-        if (response.status === 401 || response.status === 403) {
-          throw new Error("You are not authorized as a gym admin. Please check the admin account setup.");
-        }
-
+        console.error("Save/update member error:", errorText);
         throw new Error("Could not save the member. Please check the details.");
       }
 
-      showStatus(saveStatus, `${memberId} — ${name} was saved successfully.`, "ok");
-      memberForm.reset();
-      document.querySelector('input[name="currentFeePaid"][value="false"]').checked = true;
-      document.getElementById("oldDue").value = "0";
+      currentMemberId = memberId;
+      document.getElementById("memberId").value = memberId;
+      deleteBtn.disabled = false;
+
+      showStatus(
+        saveStatus,
+        currentMemberId && method === "PATCH"
+          ? `${memberId} — ${data.name} was updated successfully.`
+          : `${memberId} — ${data.name} was added successfully.`,
+        "ok"
+      );
     } catch (error) {
       showStatus(saveStatus, error.message || "Could not save member.", "error");
     } finally {
       saveBtn.disabled = false;
       saveBtn.textContent = "Add / Update Member";
     }
+  }
+
+  async function searchMember() {
+    if (!accessToken) {
+      showStatus(memberSearchStatus, "Please log in again.", "error");
+      return;
+    }
+
+    const value = document.getElementById("searchValue").value.trim();
+    if (!value) {
+      showStatus(memberSearchStatus, "Enter a Member ID or mobile number.", "error");
+      return;
+    }
+
+    searchBtn.disabled = true;
+    searchBtn.textContent = "Searching…";
+    clearStatus(memberSearchStatus);
+
+    try {
+      const isMemberId = /^JM-\d+$/i.test(value);
+      const query = isMemberId
+        ? `member_id=eq.${encodeURIComponent(value.toUpperCase())}`
+        : `mobile_number=eq.${encodeURIComponent(value)}`;
+
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/members?select=member_id,name,village,mobile_number,joining_date,fee,current_fee_paid,old_due&${query}&limit=1`,
+        {
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${accessToken}`
+          }
+        }
+      );
+
+      if (!response.ok) throw new Error("Could not search the member.");
+
+      const rows = await response.json();
+      if (!rows.length) {
+        currentMemberId = null;
+        deleteBtn.disabled = true;
+        showStatus(memberSearchStatus, "No member found.", "error");
+        return;
+      }
+
+      const member = rows[0];
+      currentMemberId = member.member_id;
+
+      document.getElementById("memberId").value = member.member_id || "";
+      document.getElementById("memberName").value = member.name || "";
+      document.getElementById("village").value = member.village || "";
+      document.getElementById("mobileNumber").value = member.mobile_number || "";
+      document.getElementById("joiningDate").value = member.joining_date || "";
+      document.getElementById("fee").value = member.fee ?? "";
+      document.getElementById("oldDue").value = member.old_due ?? 0;
+
+      const paidRadio = document.querySelector('input[name="currentFeePaid"][value="true"]');
+      const dueRadio = document.querySelector('input[name="currentFeePaid"][value="false"]');
+      (member.current_fee_paid ? paidRadio : dueRadio).checked = true;
+
+      deleteBtn.disabled = false;
+      showStatus(memberSearchStatus, `${member.member_id} loaded. You can now update the details.`, "ok");
+    } catch (error) {
+      showStatus(memberSearchStatus, error.message || "Search failed.", "error");
+    } finally {
+      searchBtn.disabled = false;
+      searchBtn.textContent = "Search Member";
+    }
+  }
+
+  async function deleteMember() {
+    if (!accessToken || !currentMemberId) return;
+
+    const name = document.getElementById("memberName").value.trim() || "this member";
+    const confirmed = window.confirm(
+      `Are you sure you want to permanently delete ${currentMemberId} — ${name}?\n\nThis action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    deleteBtn.disabled = true;
+    deleteBtn.textContent = "Deleting…";
+    clearStatus(saveStatus);
+
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/members?member_id=eq.${encodeURIComponent(currentMemberId)}`,
+        {
+          method: "DELETE",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${accessToken}`,
+            "Prefer": "return=minimal"
+          }
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Delete member error:", errorText);
+        throw new Error("Could not delete the member.");
+      }
+
+      showStatus(saveStatus, `${currentMemberId} — ${name} was deleted successfully.`, "ok");
+      clearMemberForm();
+    } catch (error) {
+      showStatus(saveStatus, error.message || "Could not delete member.", "error");
+    } finally {
+      deleteBtn.textContent = "Delete Member";
+    }
+  }
+
+  function clearMemberForm() {
+    currentMemberId = null;
+    memberForm.reset();
+    document.getElementById("memberId").value = "";
+    document.getElementById("oldDue").value = "0";
+    document.querySelector('input[name="currentFeePaid"][value="false"]').checked = true;
+    deleteBtn.disabled = true;
   }
 
   loginBtn.addEventListener("click", login);
@@ -549,6 +721,15 @@
     currentEmail = savedEmail || "";
     setAdminVisible(true);
   }
+
+  document.getElementById("searchBtn").addEventListener("click", searchMember);
+  document.getElementById("deleteBtn").addEventListener("click", deleteMember);
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    clearMemberForm();
+    clearStatus(saveStatus);
+    clearStatus(memberSearchStatus);
+  });
+
 </script>
 </body>
 </html>
