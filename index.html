@@ -144,6 +144,107 @@
 
     .nav-cta:hover { background: var(--yellow-dark); }
 
+    .admin-nav-link {
+      color: var(--yellow) !important;
+      border: 1px solid rgba(250,204,21,.35);
+      padding: .58rem .8rem;
+      border-radius: 8px;
+      font-size: .82rem !important;
+    }
+
+    .admin-nav-link:hover {
+      background: rgba(250,204,21,.08);
+      border-color: var(--yellow);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 9px;
+      background: #111;
+      cursor: pointer;
+      padding: 9px;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .mobile-menu-btn span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+
+    .mobile-menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
+    .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 850px) {
+      .nav-inner { position: relative; }
+
+      .mobile-menu-btn {
+        display: flex;
+        flex: 0 0 auto;
+        z-index: 1002;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 1px);
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: .65rem 1rem 1rem;
+        background: rgba(5,5,5,.98);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 18px 35px rgba(0,0,0,.45);
+        transform: translateY(-12px);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+      }
+
+      .nav-links.mobile-open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      .nav-links a,
+      .nav-links a:not(.nav-cta) {
+        display: block;
+        width: 100%;
+        padding: .85rem .75rem;
+        border-bottom: 1px solid rgba(255,255,255,.07);
+        font-size: .95rem !important;
+      }
+
+      .nav-links a:not(.nav-cta)::after { display: none; }
+
+      .admin-nav-link {
+        border: 0;
+        border-bottom: 1px solid rgba(255,255,255,.07);
+        border-radius: 0;
+        padding-left: .75rem !important;
+      }
+
+      .nav-links a:last-child {
+        border-bottom: 0;
+        margin-top: .55rem;
+        text-align: center;
+      }
+    }
+
     /* HERO */
     .hero {
       min-height: 680px;
@@ -517,9 +618,6 @@
 
     /* MOBILE */
     @media (max-width: 850px) {
-      .nav-links { gap: .65rem; }
-      .nav-links a:not(.nav-cta) { display: none; }
-
       .hero { min-height: 600px; }
       .hero h1 { letter-spacing: -2px; }
 
@@ -1092,11 +1190,17 @@
       <div class="nav-links">
         <a href="#facilities">Facilities</a>
         <a href="#fees">Membership</a>
-        <a href="#member-status">💳 Check Fee</a>
+        <a href="#member-status">Check Fee</a>
         <a href="#gallery">Gallery</a>
         <a href="#supplements">Supplements</a>
+        <a href="#member-admin" class="admin-nav-link">Admin Login</a>
         <a href="#contact" class="nav-cta">Contact Us</a>
       </div>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button"
+              aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
@@ -1323,12 +1427,12 @@
       <div class="member-portal">
         <div class="member-portal-grid">
           <div class="member-form">
-            <label for="memberId">JM Member ID</label>
-            <input id="memberId" type="text" placeholder="Example: JM-001" maxlength="20" autocomplete="off">
+            <label for="memberName">Name <span style="color:#777;font-weight:500;">(Optional)</span></label>
+            <input id="memberName" type="text" placeholder="Example: Sawan Namdev" maxlength="100" autocomplete="name">
 
-            <label for="memberPin">Last 4 digits of registered mobile</label>
-            <input id="memberPin" type="password" inputmode="numeric" placeholder="Example: 1978" maxlength="4" autocomplete="off">
-            <small>Use the mobile number registered with the gym.</small>
+            <label for="memberMobile">Registered mobile number <span style="color:var(--yellow);">*</span></label>
+            <input id="memberMobile" type="tel" inputmode="numeric" placeholder="Enter your 10-digit mobile number" maxlength="10" autocomplete="tel">
+            <small>Mobile number is required. Name is optional, but entering both gives an extra match check.</small>
 
             <button class="btn btn-primary" id="checkMemberBtn" type="button" style="width:100%;">
               Check Fee Status →
@@ -1339,8 +1443,8 @@
             </div>
 
             <p class="member-note">
-              For privacy, the website does not ask members to enter their full phone number.
-              If you have forgotten your Member ID, please contact the gym.
+              Your mobile number is required to check your fee. You may also enter your name for an additional match check.
+              Your JM Member ID is shown in your result.
             </p>
           </div>
 
@@ -1349,7 +1453,7 @@
           </div>
         </div>
 
-        <details class="admin-box">
+        <details class="admin-box" id="member-admin">
           <summary>Gym Admin — Member Management</summary>
           <div class="admin-panel">
             <p style="color:#aaa;margin:0;font-size:.86rem;">
@@ -1483,8 +1587,6 @@
     const SUPABASE_URL = "https://pebtoynxxoqagsgdocnf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_-611S6bVByEKVupn8S_OJw_s95F4KUC";
 
-    const memberIdInput = document.getElementById("memberId");
-    const memberPinInput = document.getElementById("memberPin");
     const memberResult = document.getElementById("memberResult");
     const checkMemberBtn = document.getElementById("checkMemberBtn");
     const memberConfigWarning = document.getElementById("memberConfigWarning");
@@ -1547,16 +1649,12 @@
     }
 
     async function checkMember() {
-      const memberId = memberIdInput.value.trim().toUpperCase();
-      const last4 = memberPinInput.value.trim();
+      const memberName = document.getElementById("memberName").value.trim();
+      const mobileNumber = document.getElementById("memberMobile").value.trim();
 
-      if (!/^JM-\d{3,}$/.test(memberId)) {
-        showMemberMessage("Please enter a valid Member ID such as JM-001.", true);
-        return;
-      }
-
-      if (!/^\d{4}$/.test(last4)) {
-        showMemberMessage("Please enter the last 4 digits of your registered mobile number.", true);
+      // Name is optional. Full mobile number is required.
+      if (!/^\d{10}$/.test(mobileNumber)) {
+        showMemberMessage("Please enter the complete 10-digit registered mobile number.", true);
         return;
       }
 
@@ -1579,16 +1677,31 @@
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            p_member_id: memberId,
-            p_mobile_last4: last4
+            p_name: memberName || null,
+            p_mobile_number: mobileNumber
           })
         });
 
-        if (!response.ok) throw new Error("Unable to check membership.");
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Member lookup error:", errorText);
+          throw new Error("Unable to check membership.");
+        }
+
         const data = await response.json();
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
-          showMemberMessage("No matching member was found. Check your Member ID and mobile digits.", true);
+          showMemberMessage(
+            memberName
+              ? "No member was found with that name and mobile number. Please check the details or try using only the mobile number."
+              : "No member was found with that mobile number. Please check the number or contact the gym.",
+            true
+          );
+          return;
+        }
+
+        if (Array.isArray(data) && data.length > 1) {
+          showMemberMessage("More than one member matched these details. Please contact the gym.", true);
           return;
         }
 
@@ -1693,17 +1806,54 @@
     }
 
     checkMemberBtn.addEventListener("click", checkMember);
-    memberPinInput.addEventListener("keydown", e => {
+    document.getElementById("memberName").addEventListener("keydown", e => {
       if (e.key === "Enter") checkMember();
     });
-    memberIdInput.addEventListener("input", () => {
-      memberIdInput.value = memberIdInput.value.toUpperCase();
+
+    document.getElementById("memberMobile").addEventListener("keydown", e => {
+      if (e.key === "Enter") checkMember();
+    });
+    document.getElementById("memberName").addEventListener("input", e => {
+      e.target.value = e.target.value.replace(/[^a-zA-Z .'-]/g, "").slice(0, 100);
+    });
+
+    document.getElementById("memberMobile").addEventListener("input", e => {
+      e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
     });
     adminLoginBtn.addEventListener("click", adminLogin);
     saveMemberBtn.addEventListener("click", saveMember);
 
     if (!supabaseReady()) memberConfigWarning.hidden = false;
 
+
+    // Mobile navigation
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const navLinks = document.querySelector(".nav-links");
+
+    function closeMobileMenu() {
+      if (!mobileMenuBtn || !navLinks) return;
+      mobileMenuBtn.classList.remove("open");
+      navLinks.classList.remove("mobile-open");
+      mobileMenuBtn.setAttribute("aria-expanded", "false");
+      mobileMenuBtn.setAttribute("aria-label", "Open menu");
+    }
+
+    if (mobileMenuBtn && navLinks) {
+      mobileMenuBtn.addEventListener("click", () => {
+        const isOpen = navLinks.classList.toggle("mobile-open");
+        mobileMenuBtn.classList.toggle("open", isOpen);
+        mobileMenuBtn.setAttribute("aria-expanded", String(isOpen));
+        mobileMenuBtn.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+      });
+
+      navLinks.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", closeMobileMenu);
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 850) closeMobileMenu();
+      });
+    }
 
     // Smooth automatic gallery movement
     const gallery = document.getElementById("galleryScroll");
