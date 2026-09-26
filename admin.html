@@ -193,6 +193,19 @@
       gap:.8rem;
       margin-top:.4rem;
     }
+    .form-actions #saveStatus {
+      grid-column:1/-1;
+      width:100%;
+      margin:0;
+    }
+    input[type="date"] {
+      color-scheme: dark;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity:1;
+      cursor:pointer;
+    }
     @media(max-width:650px) {
       .topbar-inner { align-items:flex-start; }
       .form-grid { grid-template-columns:1fr; }
@@ -241,10 +254,6 @@
       width: 100%;
       margin: 4px 0 14px;
       min-height: 48px;
-    }
-    #saveStatus {
-      width: 100%;
-      margin-top: 12px;
     }
     #searchPanel[hidden] {
       display: none !important;
@@ -367,8 +376,8 @@
         <div class="form-actions">
           <button class="btn btn-primary" id="saveBtn" type="submit">Add / Update Member</button>
           <button class="btn btn-outline" id="clearBtn" type="button">Clear Form</button>
+          <div id="saveStatus" class="status" aria-live="polite"></div>
         </div>
-        <div id="saveStatus" class="status" aria-live="polite"></div>
       </form>
 
       <div class="danger-zone">
